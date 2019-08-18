@@ -4,6 +4,29 @@
   "description": "Public cadastral map plugin for Leaflet",
   "author": "Stepan Kuzmin <to.stepan.kuzmin@gmail.com> (stepankuzmin.com)",
   "license": "BSD-2-Clause",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build --public-url ./ index.html",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cz": "git-cz",
+    "release": "standard-version",
+    "deploy": "gh-pages -d dist",
+    "postpublish": "npm run build && npm run deploy"
+  },
+  "devDependencies": {
+    "commitizen": "4.0.3",
+    "cz-conventional-changelog": "3.0.2",
+    "gh-pages": "2.1.1",
+    "leaflet": "1.5.1",
+    "parcel-bundler": "1.12.3",
+    "standard-version": "7.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
   "homepage": "https://github.com/stepankuzmin/leaflet-pkk#readme",
   "bugs": {
     "url": "https://github.com/stepankuzmin/leaflet-pkk/issues"
@@ -11,18 +34,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stepankuzmin/leaflet-pkk.git"
-  },
-  "main": "index.js",
-  "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build --public-url ./ index.html",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "npm run build && gh-pages -d dist"
-  },
-  "devDependencies": {
-    "gh-pages": "02.1.1",
-    "leaflet": "01.5.1",
-    "parcel-bundler": "01.12.3"
   },
   "keywords": [
     "leaflet",
