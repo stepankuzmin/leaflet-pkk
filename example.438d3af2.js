@@ -14145,67 +14145,95 @@ window.L = exports;
 L.TileLayer.PKK = L.TileLayer.WMS.extend({
   onAdd: function onAdd(map) {
     L.TileLayer.WMS.prototype.onAdd.call(this, map);
-    map.on("click", this.getFeatureInfo, this);
+    map.on('click', this.onClick, this);
   },
   onRemove: function onRemove(map) {
     L.TileLayer.WMS.prototype.onRemove.call(this, map);
-    map.off("click", this.getFeatureInfo, this);
+    map.off('click', this.onClick, this);
   },
-  getFeatureInfo: function getFeatureInfo(event) {
-    var url = this.getFeatureInfoUrl(event.latlng);
-    var showFeatureInfo = L.Util.bind(this.showFeatureInfo, this);
-    console.log(url);
-    fetch(url).then(function (response) {
-      return response.text();
+  onClick: function onClick(event) {
+    var latlng = event.latlng;
+    this.getFeatures(latlng);
+  },
+  getFeaturesURL: function getFeaturesURL(latlng) {
+    var baseURL = 'https://pkk5.rosreestr.ru/api/features/1';
+    var params = {
+      text: latlng.lat + ',' + latlng.lng,
+      tolerance: 4097,
+      limit: 11
+    };
+    return baseURL + L.Util.getParamString(params, baseURL);
+  },
+  getFeatures: function getFeatures(latlng) {
+    var url = this.getFeaturesURL(latlng);
+    var onFeaturesClick = L.Util.bind(this.onFeaturesClick, this);
+    var headers = {
+      referer: 'https://pkk5.rosreestr.ru/'
+    };
+    fetch(url, {
+      headers: headers
+    }).then(function (response) {
+      return response.json();
     }).then(function (info) {
-      return showFeatureInfo(null, event.latlng, info);
+      return onFeaturesClick(null, latlng, info);
     }).catch(function (error) {
-      return showFeatureInfo(error, event.latlng, null);
+      return onFeaturesClick(error, latlng, null);
     });
   },
-  getFeatureInfoUrl: function getFeatureInfoUrl(latlng) {
-    var point = this._map.latLngToContainerPoint(latlng, this._map.getZoom());
+  onFeaturesClick: function onFeaturesClick(error, latlng, info) {
+    if (error || info.features.length <= 0) {
+      return;
+    }
 
-    var size = this._map.getSize();
-
-    var params = {
-      request: "GetFeatureInfo",
-      service: "WMS",
-      srs: "EPSG:3857",
-      // this.wmsParams.crs
-      styles: this.wmsParams.styles,
-      transparent: this.wmsParams.transparent,
-      version: this.wmsParams.version,
-      format: this.wmsParams.format,
-      bbox: this._map.getBounds().toBBoxString(),
-      height: size.y,
-      width: size.x,
-      layers: this.wmsParams.layers,
-      query_layers: this.wmsParams.layers,
-      info_format: "text/html"
-      /* info_format: "application/json" */
-
-      /* info_format: "text/plain" */
-
-    };
-    params[params.version === "1.3.0" ? "i" : "x"] = point.x;
-    params[params.version === "1.3.0" ? "j" : "y"] = point.y;
-    return this._url + L.Util.getParamString(params, this._url, true);
+    var features = info.features;
+    this.fire('featuresclick', {
+      latlng: latlng,
+      features: features
+    });
+    var feature = features[0];
+    var id = feature.attrs.id;
+    this.getFeatureInfo(id, latlng);
   },
-  showFeatureInfo: function showFeatureInfo(error, latlng, info) {
-    console.log("error", error);
-    console.log("latlng", latlng);
-    console.log("info", info);
+  getFeatureInfoURL: function getFeatureInfoURL(id) {
+    var baseURL = 'https://pkk5.rosreestr.ru/api/features/1';
+    return baseURL + '/' + id;
+  },
+  getFeatureInfo: function getFeatureInfo(id, latlng) {
+    var url = this.getFeatureInfoURL(id);
+    var onFeatureClick = L.Util.bind(this.onFeatureClick, this);
+    var headers = {
+      referer: 'https://pkk5.rosreestr.ru/'
+    };
+    fetch(url, {
+      headers: headers
+    }).then(function (response) {
+      return response.json();
+    }).then(function (info) {
+      return onFeatureClick(null, latlng, info);
+    }).catch(function (error) {
+      return onFeatureClick(error, latlng, null);
+    });
+  },
+  onFeatureClick: function onFeatureClick(error, latlng, info) {
+    if (error || !info.feature) {
+      return;
+    }
+
+    var feature = info.feature;
+    this.fire('featureclick', {
+      latlng: latlng,
+      feature: feature
+    });
   }
 });
 
 L.tileLayer.pkk = function (options) {
   var opts = L.extend({
-    layers: "1,2,3,4,5,6,8,9,10,11,12,14,15,16,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33",
-    format: "image/png32",
+    layers: '1,2,3,4,5,6,8,9,10,11,12,14,15,16,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33',
+    format: 'image/png32',
     transparent: true
   }, options);
-  var url = options.url || "https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer?";
+  var url = options.url || 'https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer?';
   return new L.TileLayer.PKK(url, opts);
 };
 },{}],"example.js":[function(require,module,exports) {
@@ -14217,17 +14245,24 @@ var _index = _interopRequireDefault(require("./index"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var map = _leaflet.default.map("map").setView([55.756389, 37.63019], 14);
+var map = _leaflet.default.map('map').setView([55.756389, 37.63019], 14);
 
-var baseLayer = _leaflet.default.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+var baseLayer = _leaflet.default.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+map.addLayer(baseLayer);
 
 var pkkLayer = _leaflet.default.tileLayer.pkk({
-  layers: "8,9,10,11,12",
-  format: "image/png32",
+  layers: '8,9,10,11,12',
+  format: 'image/png32',
   transparent: true
 });
 
-map.addLayer(baseLayer);
+pkkLayer.on('featureclick', function (_ref) {
+  var latlng = _ref.latlng,
+      feature = _ref.feature;
+
+  var popup = _leaflet.default.popup().setLatLng(latlng).setContent(feature.attrs.id).openOn(map);
+});
 map.addLayer(pkkLayer);
 },{"leaflet":"node_modules/leaflet/dist/leaflet-src.js","./index":"index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -14257,7 +14292,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54589" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57299" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
