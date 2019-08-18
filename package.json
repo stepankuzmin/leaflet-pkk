@@ -1,0 +1,35 @@
+{
+  "name": "leaflet-pkk",
+  "version": "0.1.0",
+  "description": "Public cadastral map plugin for Leaflet",
+  "author": "Stepan Kuzmin <to.stepan.kuzmin@gmail.com> (stepankuzmin.com)",
+  "license": "BSD-2-Clause",
+  "homepage": "https://github.com/stepankuzmin/leaflet-pkk#readme",
+  "bugs": {
+    "url": "https://github.com/stepankuzmin/leaflet-pkk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stepankuzmin/leaflet-pkk.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "02.1.1",
+    "leaflet": "01.5.1",
+    "parcel-bundler": "01.12.3"
+  },
+  "keywords": [
+    "leaflet",
+    "leaflet-plugin",
+    "rosreestr",
+    "cadastre",
+    "pkk",
+    "pkk5"
+  ]
+}
