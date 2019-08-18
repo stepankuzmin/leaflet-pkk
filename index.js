@@ -40,7 +40,10 @@ L.TileLayer.PKK = L.TileLayer.WMS.extend({
       return;
     }
 
-    const feature = info.features[0];
+    const features = info.features;
+    this.fire('featuresclick', { latlng, features });
+
+    const feature = features[0];
     const id = feature.attrs.id;
     this.getFeatureInfo(id, latlng);
   },
@@ -66,7 +69,8 @@ L.TileLayer.PKK = L.TileLayer.WMS.extend({
       return;
     }
 
-    this.fire('featureclick', { latlng, feature: info.feature });
+    const feature = info.feature;
+    this.fire('featureclick', { latlng, feature });
   }
 });
 
