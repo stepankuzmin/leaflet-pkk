@@ -7,4 +7,4 @@ L.TileLayer.PKK=L.TileLayer.WMS.extend({onAdd:function(t){L.TileLayer.WMS.protot
 },{}],"Zdfz":[function(require,module,exports) {
 "use strict";var e=t(require("leaflet")),a=t(require("./index"));function t(e){return e&&e.__esModule?e:{default:e}}var r=e.default.map("map").setView([55.756389,37.63019],14),l=e.default.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),d=e.default.tileLayer.pkk({layers:"8,9,10,11,12",format:"image/png32",transparent:!0});r.addLayer(l),r.addLayer(d);
 },{"leaflet":"H1SE","./index":"Focm"}]},{},["Zdfz"], null)
-//# sourceMappingURL=/example.c364c2cd.js.map
+//# sourceMappingURL=example.c364c2cd.js.map
