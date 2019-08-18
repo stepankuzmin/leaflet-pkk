@@ -1,7 +1,7 @@
 import L from 'leaflet';
 import LeafletPKK from './index';
 
-const map = L.map('map').setView([55.756389, 37.63019], 14);
+const map = L.map('map').setView([55.750883, 37.628852], 16);
 
 const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 map.addLayer(baseLayer);

@@ -2,7 +2,9 @@
 
 Public cadastral map ([pkk5.rosreestr.ru](pkk5.rosreestr.ru)) plugin for Leaflet.
 
-![screenshot](https://raw.githubusercontent.com/stepankuzmin/leaflet-pkk/master/screenshot.png)
+[**Example**](https://stepankuzmin.github.io/leaflet-pkk/)
+
+[![screenshot](https://raw.githubusercontent.com/stepankuzmin/leaflet-pkk/master/screenshot.png)](https://stepankuzmin.github.io/leaflet-pkk/)
 
 ## Usage
 
