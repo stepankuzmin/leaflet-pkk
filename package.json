@@ -15,7 +15,7 @@
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html",
+    "build": "parcel build --public-url ./ index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "npm run build && gh-pages -d dist"
   },

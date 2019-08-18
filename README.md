@@ -1,6 +1,6 @@
 # leaflet-pkk
 
-[Public cadastral map](pkk5.rosreestr.ru) plugin for Leaflet.
+Public cadastral map ([pkk5.rosreestr.ru](pkk5.rosreestr.ru)) plugin for Leaflet.
 
 ## Example
 
