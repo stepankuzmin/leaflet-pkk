@@ -14143,6 +14143,10 @@ window.L = exports;
 
 },{}],"index.js":[function(require,module,exports) {
 L.TileLayer.PKK = L.TileLayer.WMS.extend({
+  _initHook: function _initHook() {
+    this.apiURL = this.options.apiURL || 'https://pkk5.rosreestr.ru/api/features/1';
+    this.baseURL = this.options.baseURL || 'https://pkk5.rosreestr.ru/';
+  },
   onAdd: function onAdd(map) {
     L.TileLayer.WMS.prototype.onAdd.call(this, map);
     map.on('click', this.onClick, this);
@@ -14156,22 +14160,20 @@ L.TileLayer.PKK = L.TileLayer.WMS.extend({
     this.getFeatures(latlng);
   },
   getFeaturesURL: function getFeaturesURL(latlng) {
-    var baseURL = 'https://pkk5.rosreestr.ru/api/features/1';
     var params = {
       text: latlng.lat + ',' + latlng.lng,
-      tolerance: 4097,
-      limit: 11
+      tolerance: 4,
+      limit: 1
     };
-    return baseURL + L.Util.getParamString(params, baseURL);
+    return this.apiURL + L.Util.getParamString(params, this.apiURL);
   },
   getFeatures: function getFeatures(latlng) {
     var url = this.getFeaturesURL(latlng);
     var onFeaturesClick = L.Util.bind(this.onFeaturesClick, this);
-    var headers = {
-      referer: 'https://pkk5.rosreestr.ru/'
-    };
     fetch(url, {
-      headers: headers
+      headers: {
+        referer: this.baseURL
+      }
     }).then(function (response) {
       return response.json();
     }).then(function (info) {
@@ -14195,17 +14197,15 @@ L.TileLayer.PKK = L.TileLayer.WMS.extend({
     this.getFeatureInfo(id, latlng);
   },
   getFeatureInfoURL: function getFeatureInfoURL(id) {
-    var baseURL = 'https://pkk5.rosreestr.ru/api/features/1';
-    return baseURL + '/' + id;
+    return this.apiURL + '/' + id;
   },
   getFeatureInfo: function getFeatureInfo(id, latlng) {
     var url = this.getFeatureInfoURL(id);
     var onFeatureClick = L.Util.bind(this.onFeatureClick, this);
-    var headers = {
-      referer: 'https://pkk5.rosreestr.ru/'
-    };
     fetch(url, {
-      headers: headers
+      headers: {
+        referer: this.baseURL
+      }
     }).then(function (response) {
       return response.json();
     }).then(function (info) {
@@ -14226,6 +14226,7 @@ L.TileLayer.PKK = L.TileLayer.WMS.extend({
     });
   }
 });
+L.TileLayer.PKK.addInitHook('_initHook');
 
 L.tileLayer.pkk = function (options) {
   var opts = L.extend({
@@ -14245,7 +14246,7 @@ var _index = _interopRequireDefault(require("./index"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var map = _leaflet.default.map('map').setView([55.756389, 37.63019], 14);
+var map = _leaflet.default.map('map').setView([55.750883, 37.628852], 16);
 
 var baseLayer = _leaflet.default.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
 
@@ -14292,7 +14293,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57299" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61958" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
