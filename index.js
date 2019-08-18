@@ -1,53 +1,72 @@
 L.TileLayer.PKK = L.TileLayer.WMS.extend({
   onAdd: function(map) {
     L.TileLayer.WMS.prototype.onAdd.call(this, map);
-    map.on("click", this.getFeatureInfo, this);
+    map.on('click', this.onClick, this);
   },
   onRemove: function(map) {
     L.TileLayer.WMS.prototype.onRemove.call(this, map);
-    map.off("click", this.getFeatureInfo, this);
+    map.off('click', this.onClick, this);
   },
-  getFeatureInfo: function(event) {
-    const url = this.getFeatureInfoUrl(event.latlng);
-    const showFeatureInfo = L.Util.bind(this.showFeatureInfo, this);
-    console.log(url);
-
-    fetch(url)
-      .then((response) => response.text())
-      .then((info) => showFeatureInfo(null, event.latlng, info))
-      .catch((error) => showFeatureInfo(error, event.latlng, null));
+  onClick: function(event) {
+    const latlng = event.latlng;
+    this.getFeatures(latlng);
   },
-  getFeatureInfoUrl: function(latlng) {
-    const point = this._map.latLngToContainerPoint(latlng, this._map.getZoom());
-    const size = this._map.getSize();
+  getFeaturesURL: function(latlng) {
+    const baseURL = 'https://pkk5.rosreestr.ru/api/features/1';
 
     const params = {
-      request: "GetFeatureInfo",
-      service: "WMS",
-      srs: "EPSG:3857", // this.wmsParams.crs
-      styles: this.wmsParams.styles,
-      transparent: this.wmsParams.transparent,
-      version: this.wmsParams.version,
-      format: this.wmsParams.format,
-      bbox: this._map.getBounds().toBBoxString(),
-      height: size.y,
-      width: size.x,
-      layers: this.wmsParams.layers,
-      query_layers: this.wmsParams.layers,
-      info_format: "text/html"
-      /* info_format: "application/json" */
-      /* info_format: "text/plain" */
+      text: latlng.lat + ',' + latlng.lng,
+      tolerance: 4097,
+      limit: 11
     };
 
-    params[params.version === "1.3.0" ? "i" : "x"] = point.x;
-    params[params.version === "1.3.0" ? "j" : "y"] = point.y;
-
-    return this._url + L.Util.getParamString(params, this._url, true);
+    return baseURL + L.Util.getParamString(params, baseURL);
   },
-  showFeatureInfo: function(error, latlng, info) {
-    console.log("error", error);
-    console.log("latlng", latlng);
-    console.log("info", info);
+  getFeatures: function(latlng) {
+    const url = this.getFeaturesURL(latlng);
+    const onFeaturesClick = L.Util.bind(this.onFeaturesClick, this);
+
+    const headers = {
+      referer: 'https://pkk5.rosreestr.ru/'
+    };
+
+    fetch(url, { headers })
+      .then((response) => response.json())
+      .then((info) => onFeaturesClick(null, latlng, info))
+      .catch((error) => onFeaturesClick(error, latlng, null));
+  },
+  onFeaturesClick: function(error, latlng, info) {
+    if (error || info.features.length <= 0) {
+      return;
+    }
+
+    const feature = info.features[0];
+    const id = feature.attrs.id;
+    this.getFeatureInfo(id, latlng);
+  },
+  getFeatureInfoURL: function(id) {
+    const baseURL = 'https://pkk5.rosreestr.ru/api/features/1';
+    return baseURL + '/' + id;
+  },
+  getFeatureInfo: function(id, latlng) {
+    const url = this.getFeatureInfoURL(id);
+    const onFeatureClick = L.Util.bind(this.onFeatureClick, this);
+
+    const headers = {
+      referer: 'https://pkk5.rosreestr.ru/'
+    };
+
+    fetch(url, { headers })
+      .then((response) => response.json())
+      .then((info) => onFeatureClick(null, latlng, info))
+      .catch((error) => onFeatureClick(error, latlng, null));
+  },
+  onFeatureClick: function(error, latlng, info) {
+    if (error || !info.feature) {
+      return;
+    }
+
+    this.fire('featureclick', { latlng, feature: info.feature });
   }
 });
 
@@ -55,8 +74,8 @@ L.tileLayer.pkk = function(options) {
   const opts = L.extend(
     {
       layers:
-        "1,2,3,4,5,6,8,9,10,11,12,14,15,16,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33",
-      format: "image/png32",
+        '1,2,3,4,5,6,8,9,10,11,12,14,15,16,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33',
+      format: 'image/png32',
       transparent: true
     },
     options
@@ -64,7 +83,7 @@ L.tileLayer.pkk = function(options) {
 
   const url =
     options.url ||
-    "https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer?";
+    'https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer?';
 
   return new L.TileLayer.PKK(url, opts);
 };
