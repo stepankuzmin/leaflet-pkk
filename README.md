@@ -6,6 +6,20 @@ Public cadastral map ([pkk5.rosreestr.ru](pkk5.rosreestr.ru)) plugin for Leaflet
 
 [![screenshot](https://raw.githubusercontent.com/stepankuzmin/leaflet-pkk/master/screenshot.png)](https://stepankuzmin.github.io/leaflet-pkk/)
 
+## Install
+
+Install using npm:
+
+```shell
+npm install --save leaflet-pkk
+```
+
+...or using unpkg CDN
+
+```html
+<script src="https://unpkg.com/leaflet-pkk/index.js"></script>
+```
+
 ## Usage
 
 ```js

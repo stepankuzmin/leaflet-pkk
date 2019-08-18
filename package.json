@@ -1,7 +1,7 @@
 {
   "name": "leaflet-pkk",
   "version": "0.1.0",
-  "description": "Public cadastral map plugin for Leaflet",
+  "description": "Public cadastral map (pkk5.rosreestr.ru) plugin for Leaflet",
   "author": "Stepan Kuzmin <to.stepan.kuzmin@gmail.com> (stepankuzmin.com)",
   "license": "BSD-2-Clause",
   "main": "index.js",
