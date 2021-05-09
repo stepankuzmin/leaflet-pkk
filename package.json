@@ -20,7 +20,7 @@
     "gh-pages": "2.1.1",
     "leaflet": "1.5.1",
     "parcel-bundler": "1.12.3",
-    "standard-version": "7.0.0"
+    "standard-version": "8.0.1"
   },
   "config": {
     "commitizen": {
